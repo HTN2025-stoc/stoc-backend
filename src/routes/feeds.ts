@@ -236,4 +236,22 @@ router.post('/posts', [
   }
 })
 
+// Delete all user's feed posts
+router.delete('/posts', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id
+
+    const deletedCount = await prisma.feedPost.deleteMany({
+      where: { userId }
+    })
+
+    res.json({
+      message: 'Feed posts cleared successfully',
+      deletedCount: deletedCount.count
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 export default router

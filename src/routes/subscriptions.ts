@@ -9,6 +9,7 @@ const prisma = new PrismaClient()
 router.get('/', authenticateToken, async (req: AuthRequest, res, next) => {
   try {
     const subscriberId = req.user!.id
+    console.log('🔍 Fetching subscriptions for user:', subscriberId)
 
     const subscriptions = await prisma.subscription.findMany({
       where: { subscriberId },
@@ -27,7 +28,14 @@ router.get('/', authenticateToken, async (req: AuthRequest, res, next) => {
       orderBy: { createdAt: 'desc' }
     })
 
-    res.json({
+    console.log('📋 Found subscriptions:', subscriptions.length)
+    console.log('📊 Subscription details:', subscriptions.map(s => ({
+      id: s.id,
+      publisherId: s.publisherId,
+      publisherUsername: s.publisher.username
+    })))
+
+    const response = {
       subscriptions: subscriptions.map(sub => ({
         id: sub.id,
         publisher: {
@@ -38,8 +46,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res, next) => {
         },
         createdAt: sub.createdAt
       }))
-    })
+    }
+
+    console.log('✅ Sending subscriptions response:', response)
+    res.json(response)
   } catch (error) {
+    console.error('❌ Error fetching subscriptions:', error)
     next(error)
   }
 })
