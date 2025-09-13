@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { body, validationResult } from 'express-validator'
 import { PrismaClient } from '@prisma/client'
+import { authenticateToken, AuthRequest } from '../middleware/auth'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -138,6 +139,26 @@ router.post('/login', [
         email: user.email,
         username: user.username,
         createdAt: user.createdAt
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get current user info
+router.get('/me', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'User not authenticated' })
+    }
+
+    res.json({
+      message: 'User info retrieved successfully',
+      user: {
+        id: req.user.id,
+        email: req.user.email,
+        username: req.user.username
       }
     })
   } catch (error) {
