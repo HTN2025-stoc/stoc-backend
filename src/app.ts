@@ -22,7 +22,7 @@ app.use(helmet())
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173'],
+  origin: true, // Allow all origins for development
   credentials: true,
   optionsSuccessStatus: 200
 }
@@ -42,7 +42,28 @@ app.use(limiter)
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-// Request logging
+// Enhanced request logging with debug info
+app.use((req, res, next) => {
+  console.log(`\n🔍 [${new Date().toISOString()}] ${req.method} ${req.url}`)
+  console.log(`📍 Origin: ${req.headers.origin || 'none'}`)
+  console.log(`🔑 Authorization: ${req.headers.authorization ? 'Present' : 'Missing'}`)
+  console.log(`📦 Content-Type: ${req.headers['content-type'] || 'none'}`)
+  
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log(`📄 Body:`, JSON.stringify(req.body, null, 2))
+  }
+  
+  // Log response
+  const originalSend = res.send
+  res.send = function(data) {
+    console.log(`✅ Response ${res.statusCode}:`, typeof data === 'string' ? data.substring(0, 200) : JSON.stringify(data).substring(0, 200))
+    return originalSend.call(this, data)
+  }
+  
+  next()
+})
+
+// Original request logger
 app.use(requestLogger)
 
 // Health check endpoint
