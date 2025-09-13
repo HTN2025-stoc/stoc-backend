@@ -10,8 +10,8 @@ const prisma = new PrismaClient()
 // Register new user
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
-  body('username').isLength({ min: 3, max: 30 }).trim(),
-  body('password').isLength({ min: 6 })
+  body('username').isLength({ min: 4, max: 30 }).trim(),
+  body('password').isLength({ min: 4 })
 ], async (req: Request, res: Response, next: NextFunction) => {
   try {
     const errors = validationResult(req)
