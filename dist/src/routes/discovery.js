@@ -50,7 +50,6 @@ router.get('/users', auth_1.authenticateToken, async (req, res, next) => {
             const previewPosts = await prisma.feedPost.findMany({
                 where: { userId: user.id },
                 orderBy: { capturedAt: 'desc' },
-                take: 6,
                 select: {
                     id: true,
                     platform: true,

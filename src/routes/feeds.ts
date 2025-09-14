@@ -243,6 +243,43 @@ router.post('/posts', [
   }
 })
 
+// Delete specific feed post
+router.delete('/posts/:postId', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id
+    const { postId } = req.params
+
+    // First check if the post exists and belongs to the user
+    const post = await prisma.feedPost.findUnique({
+      where: { id: postId }
+    })
+
+    if (!post) {
+      return res.status(404).json({
+        error: 'Post not found'
+      })
+    }
+
+    if (post.userId !== userId) {
+      return res.status(403).json({
+        error: 'You can only delete your own posts'
+      })
+    }
+
+    // Delete the post
+    await prisma.feedPost.delete({
+      where: { id: postId }
+    })
+
+    res.json({
+      message: 'Post deleted successfully',
+      postId
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // Delete all user's feed posts
 router.delete('/posts', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
