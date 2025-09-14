@@ -15,6 +15,8 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
+  bio       String?
+  isPublic  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -23,6 +25,14 @@ model User {
   shareLinks    ShareLink[]
   subscriptions Subscription[] @relation("Subscriber")
   subscribers   Subscription[] @relation("Publisher")
+  
+  // Swipe relations
+  swipesGiven   Swipe[] @relation("SwipeGiver")
+  swipesReceived Swipe[] @relation("SwipeReceiver")
+  
+  // Connection relations
+  connectionsInitiated Connection[] @relation("ConnectionInitiator")
+  connectionsReceived  Connection[] @relation("ConnectionReceiver")
 
   @@map("users")
 }
@@ -80,8 +90,51 @@ model Subscription {
   @@map("subscriptions")
 }
 
+model Swipe {
+  id         String    @id @default(cuid())
+  giverId    String
+  receiverId String
+  direction  SwipeDirection
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  giver    User @relation("SwipeGiver", fields: [giverId], references: [id], onDelete: Cascade)
+  receiver User @relation("SwipeReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([giverId, receiverId])
+  @@map("swipes")
+}
+
+model Connection {
+  id          String           @id @default(cuid())
+  initiatorId String
+  receiverId  String
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relations
+  initiator User @relation("ConnectionInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  receiver  User @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([initiatorId, receiverId])
+  @@map("connections")
+}
+
 enum Platform {
   TIKTOK
   INSTAGRAM
   TWITTER
+}
+
+enum SwipeDirection {
+  LEFT
+  RIGHT
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
 }

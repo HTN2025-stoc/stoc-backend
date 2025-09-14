@@ -8,6 +8,7 @@ import authRoutes from './routes/auth'
 import feedRoutes from './routes/feeds'
 import sharingRoutes from './routes/sharing'
 import subscriptionRoutes from './routes/subscriptions'
+import discoveryRoutes from './routes/discovery'
 import { errorHandler } from './middleware/errorHandler'
 import { requestLogger } from './middleware/requestLogger'
 
@@ -80,6 +81,7 @@ app.use('/auth', authRoutes)
 app.use('/feeds', feedRoutes)
 app.use('/sharing', sharingRoutes)
 app.use('/subscriptions', subscriptionRoutes)
+app.use('/discovery', discoveryRoutes)
 
 // 404 handler
 app.use('*', (req, res) => {

@@ -62,6 +62,7 @@ router.get('/posts/:userId', authenticateToken, async (req: AuthRequest, res: Re
     const { limit = 50, offset = 0 } = req.query
 
     // Check if current user is subscribed to this user
+    console.log('🔍 Checking subscription:', { currentUserId, userId })
     const subscription = await prisma.subscription.findUnique({
       where: {
         subscriberId_publisherId: {
@@ -71,12 +72,16 @@ router.get('/posts/:userId', authenticateToken, async (req: AuthRequest, res: Re
       }
     })
 
+    console.log('📋 Subscription found:', subscription)
+
     if (!subscription) {
+      console.log('❌ No subscription found between users')
       return res.status(403).json({
         error: 'You are not subscribed to this user\'s feed'
       })
     }
 
+    console.log('🔍 Fetching posts for userId:', userId)
     const posts = await prisma.feedPost.findMany({
       where: { userId },
       orderBy: { capturedAt: 'desc' },
@@ -92,6 +97,8 @@ router.get('/posts/:userId', authenticateToken, async (req: AuthRequest, res: Re
     const totalCount = await prisma.feedPost.count({
       where: { userId }
     })
+
+    console.log('📊 Posts found:', posts.length, 'Total count:', totalCount)
 
     res.json({
       posts: posts.map(post => ({
