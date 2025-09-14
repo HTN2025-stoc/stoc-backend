@@ -118,7 +118,7 @@ router.get('/posts/:userId', auth_1.authenticateToken, async (req, res, next) =>
 // Save new feed post
 router.post('/posts', [
     auth_1.authenticateToken,
-    (0, express_validator_1.body)('platform').isIn(['tiktok', 'instagram', 'twitter']),
+    (0, express_validator_1.body)('platform').isIn(['tiktok', 'instagram', 'twitter', 'reddit']),
     (0, express_validator_1.body)('postId').notEmpty().trim(),
     (0, express_validator_1.body)('author').notEmpty().trim(),
     (0, express_validator_1.body)('content').notEmpty().trim(),

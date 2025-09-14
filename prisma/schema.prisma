@@ -43,7 +43,8 @@ model FeedPost {
   platform    Platform
   postId      String
   author      String
-  content     String
+  title       String
+  content     String?
   mediaUrl    String?
   thumbnailUrl String?
   likes       Int      @default(0)
@@ -125,6 +126,7 @@ enum Platform {
   TIKTOK
   INSTAGRAM
   TWITTER
+  REDDIT
 }
 
 enum SwipeDirection {

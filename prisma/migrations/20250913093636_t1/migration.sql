@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Platform" AS ENUM ('TIKTOK', 'INSTAGRAM', 'TWITTER');
+CREATE TYPE "Platform" AS ENUM ('TIKTOK', 'INSTAGRAM', 'TWITTER', 'REDDIT');
 
 -- CreateTable
 CREATE TABLE "users" (

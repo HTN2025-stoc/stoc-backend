@@ -142,11 +142,11 @@ router.post('/swipe', authenticateToken, async (req: AuthRequest, res, next) => 
           success: true,
           direction,
           isMatch: true,
-          message: 'Successfully connected to user'
+          message: 'Successfully subscribed to user'
         })
       } catch (error) {
         res.status(500).json({
-          error: 'Failed to create connection'
+          error: 'Failed to create subscription'
         })
       }
     } else {
